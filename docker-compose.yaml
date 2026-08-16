@@ -1,0 +1,37 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+        - student_network
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+        - student_network
+    ports:
+      - "8084:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+networks:
+  student_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
