@@ -51,8 +51,8 @@ pipeline {
                 echo '=== CD: Starting new containers ==='
                 bat 'docker-compose up -d'
 
-                echo '=== Waiting for app ==='
-                bat 'timeout /t 5'
+                echo '=== Waiting for app to start ==='
+                bat 'ping localhost -n 6 > nul'
 
                 echo '=== App deployed successfully ==='
             }
@@ -70,7 +70,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ CI/CD Pipeline succeeded! App deployed to Docker Compose.'
+            echo '✅ CI/CD Pipeline succeeded! App deployed.'
         }
 
         failure {
