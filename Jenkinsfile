@@ -7,6 +7,7 @@ pipeline {
 
         DOCKER_IMAGE_NAME = 'gaurav122002/dockerdemo'
         DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
+        EMAIL_RECIPIENTS = 'springboot.kafka.test@gmail.com'
     }
 
     stages {
@@ -71,11 +72,44 @@ pipeline {
     post {
         success {
             echo '✅ CI/CD Pipeline succeeded! App deployed.'
+            emailext(
+                    to: '${gauravsabe23@gmail.com}',
+                    subject: "✅ Deployment Success - Build #${BUILD_NUMBER}",
+                    body: '''
+                    <h2>Deployment Successful!</h2>
+                    <p><b>Build Number:</b> ${BUILD_NUMBER}</p>
+                    <p><b>Image:</b> gaurav122002/dockerdemo:${BUILD_NUMBER}</p>
+                    <p><b>Status:</b> Running on docker-compose</p>
+                    <p><b>Access App:</b> http://localhost:8080</p>
+                    <hr>
+                    <p><b>Build URL:</b> ${BUILD_URL}</p>
+                    <p>Your Spring Boot application has been deployed successfully!</p>
+                ''',
+                    mimeType: 'text/html'
+            )
         }
 
         failure {
             echo '❌ Pipeline failed!'
             bat 'docker-compose logs || exit /b 0'
+            emailext(
+                    to: '${gauravsabe23@gmail.com}',
+                    subject: "❌ Deployment Failed - Build #${BUILD_NUMBER}",
+                    body: '''
+                    <h2>Deployment Failed!</h2>
+                    <p><b>Build Number:</b> ${BUILD_NUMBER}</p>
+                    <p><b>Status:</b> FAILED</p>
+                    <hr>
+                    <p><b>Build URL:</b> ${BUILD_URL}</p>
+                    <p>Please check the logs for details.</p>
+                    <p><b>Jenkins Console:</b> ${BUILD_URL}console</p>
+                ''',
+                    mimeType: 'text/html'
+            )
+        }
+
+        always {
+            echo 'Pipeline finished'
         }
     }
 }
