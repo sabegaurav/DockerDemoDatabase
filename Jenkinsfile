@@ -5,7 +5,7 @@ pipeline {
         MAVEN_HOME = 'C:\\apache-maven-3.9.16'
         PATH = "${MAVEN_HOME}\\bin;${env.PATH}"
 
-        DOCKER_IMAGE_NAME = 'gaurav122002/dockerdatabase'
+        DOCKER_IMAGE_NAME = 'gaurav122002/dockerdemo'
         DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
@@ -43,7 +43,7 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose'){
+        stage('Deploy with Docker Compose') {
             steps {
                 echo '=== CD: Stopping old containers ==='
                 bat 'docker-compose down || exit /b 0'
@@ -51,11 +51,10 @@ pipeline {
                 echo '=== CD: Starting new containers ==='
                 bat 'docker-compose up -d'
 
-                echo '=== Waiting for app to start ==='
+                echo '=== Waiting for app ==='
                 bat 'timeout /t 5'
 
-                echo '=== Checking running containers ==='
-                bat 'docker ps'
+                echo '=== App deployed successfully ==='
             }
         }
 
@@ -71,7 +70,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Pipeline succeeded! App deployed with docker-compose'
+            echo '✅ CI/CD Pipeline succeeded! App deployed to Docker Compose.'
         }
 
         failure {
